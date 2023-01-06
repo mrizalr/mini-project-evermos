@@ -1,0 +1,9 @@
+{
+    "db":{
+        "user":"root",
+        "password":"",
+        "port":"2252",
+        "dbname":"mini_project_evermos"
+    },
+    "port":"8080"
+}
