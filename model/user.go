@@ -13,7 +13,7 @@ type UserRegisterRequest struct {
 
 type UserLoginRequest struct {
 	PhoneNumber string `json:"no_telp"`
-	Password    string `json:"password"`
+	Password    string `json:"kata_sandi"`
 }
 
 type UserLoginResponse struct {

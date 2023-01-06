@@ -10,7 +10,7 @@ import (
 var baseUrl string = `https://www.emsifa.com/api-wilayah-indonesia/api`
 
 func GetProvince(ProvinceID uint) (model.Province, error) {
-	url := fmt.Sprintf("%s/province/%d", baseUrl, ProvinceID)
+	url := fmt.Sprintf(`%s/province/%d.json`, baseUrl, ProvinceID)
 	province := model.Province{}
 
 	data, err := Fetch(FetchOptions{
@@ -32,7 +32,7 @@ func GetProvince(ProvinceID uint) (model.Province, error) {
 }
 
 func GetCity(CityID uint) (model.City, error) {
-	url := fmt.Sprintf("%s/province/%d", baseUrl, CityID)
+	url := fmt.Sprintf(`%s/regency/%d.json`, baseUrl, CityID)
 	city := model.City{}
 
 	data, err := Fetch(FetchOptions{
