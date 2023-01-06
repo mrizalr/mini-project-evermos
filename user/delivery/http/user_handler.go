@@ -15,6 +15,7 @@ type userHandler struct {
 func NewUserHandler(r fiber.Router, userUsecase domain.UserUsecase) {
 	handler := userHandler{userUsecase}
 	r.Post("/auth/register", handler.RegisterUser)
+	r.Post("/auth/login", handler.LoginUser)
 }
 
 func (h *userHandler) RegisterUser(c *fiber.Ctx) error {
@@ -39,11 +40,44 @@ func (h *userHandler) RegisterUser(c *fiber.Ctx) error {
 		})
 	}
 
-	c.Status(http.StatusCreated)
+	c.Status(http.StatusOK)
 	return c.JSON(model.Response{
 		Status:  "true",
 		Message: "Succeed to POST data",
 		Errors:  nil,
 		Data:    "Register Succeed",
 	})
+}
+
+func (h *userHandler) LoginUser(c *fiber.Ctx) error {
+	userRequest := model.UserLoginRequest{}
+	errs := []string{}
+
+	if err := c.BodyParser(&userRequest); err != nil {
+		errs = append(errs, err.Error())
+	}
+
+	user, err := h.userUsecase.Login(userRequest)
+	if err != nil {
+		errs = append(errs, err.Error())
+	}
+
+	if len(errs) > 0 {
+		c.Status(http.StatusUnauthorized)
+		return c.JSON(model.Response{
+			Status:  "false",
+			Message: "Failed to POST data",
+			Errors:  errs,
+			Data:    nil,
+		})
+	}
+
+	c.Status(http.StatusOK)
+	return c.JSON(model.Response{
+		Status:  "true",
+		Message: "Succeed to POST data",
+		Errors:  nil,
+		Data:    user,
+	})
+
 }

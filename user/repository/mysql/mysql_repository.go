@@ -20,6 +20,6 @@ func (r *mysqlUserRepository) Register(user domain.User) error {
 
 func (r *mysqlUserRepository) Login(phoneNumber string) (domain.User, error) {
 	user := domain.User{}
-	tx := r.db.Where("no_telp = ?", phoneNumber).First(&user)
+	tx := r.db.Where("phone_number = ?", phoneNumber).First(&user)
 	return user, tx.Error
 }
