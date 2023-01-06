@@ -3,6 +3,7 @@ module github.com/mrizalr/mini-project-evermos
 go 1.19
 
 require (
+	github.com/gofiber/fiber/v2 v2.41.0
 	github.com/spf13/viper v1.14.0
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
 	gorm.io/driver/mysql v1.4.5
@@ -13,7 +14,6 @@ require (
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
-	github.com/gofiber/fiber/v2 v2.41.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect

@@ -21,7 +21,9 @@ type User struct {
 
 type UserRepository interface {
 	Register(User) error
+	Login(string) (User, error)
 }
 type UserUsecase interface {
 	Register(model.UserRegisterRequest) error
+	Login(model.UserLoginRequest) (model.UserLoginResponse, error)
 }
