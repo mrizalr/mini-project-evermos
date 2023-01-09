@@ -33,7 +33,7 @@ func (h *userHandler) RegisterUser(c *fiber.Ctx) error {
 	if len(errs) > 0 {
 		c.Status(http.StatusBadRequest)
 		return c.JSON(model.Response{
-			Status:  "false",
+			Status:  false,
 			Message: "Failed to POST data",
 			Errors:  errs,
 			Data:    nil,
@@ -42,7 +42,7 @@ func (h *userHandler) RegisterUser(c *fiber.Ctx) error {
 
 	c.Status(http.StatusOK)
 	return c.JSON(model.Response{
-		Status:  "true",
+		Status:  true,
 		Message: "Succeed to POST data",
 		Errors:  nil,
 		Data:    "Register Succeed",
@@ -65,7 +65,7 @@ func (h *userHandler) LoginUser(c *fiber.Ctx) error {
 	if len(errs) > 0 {
 		c.Status(http.StatusUnauthorized)
 		return c.JSON(model.Response{
-			Status:  "false",
+			Status:  false,
 			Message: "Failed to POST data",
 			Errors:  errs,
 			Data:    nil,
@@ -74,7 +74,7 @@ func (h *userHandler) LoginUser(c *fiber.Ctx) error {
 
 	c.Status(http.StatusOK)
 	return c.JSON(model.Response{
-		Status:  "true",
+		Status:  true,
 		Message: "Succeed to POST data",
 		Errors:  nil,
 		Data:    user,

@@ -1,12 +1,15 @@
 package usecase
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/mrizalr/mini-project-evermos/domain"
 	"github.com/mrizalr/mini-project-evermos/model"
 	"github.com/mrizalr/mini-project-evermos/utils"
+	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -68,12 +71,26 @@ func (u *userUsecase) Login(request model.UserLoginRequest) (model.UserLoginResp
 		return userResponse, err
 	}
 
-	userProvince, err := utils.GetProvince(user.ProvinceID)
+	url := fmt.Sprintf("https://www.emsifa.com/api-wilayah-indonesia/api/province/%d.json", user.ProvinceID)
+	userProvince := model.Province{}
+	err = utils.GetRegionData(url, &userProvince)
 	if err != nil {
 		return userResponse, err
 	}
 
-	userCity, err := utils.GetCity(user.CityID)
+	url = fmt.Sprintf("https://www.emsifa.com/api-wilayah-indonesia/api/regency/%d.json", user.CityID)
+	userCity := model.City{}
+	err = utils.GetRegionData(url, &userCity)
+	if err != nil {
+		return userResponse, err
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": user.ID,
+		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(viper.GetString("secret_key")))
 	if err != nil {
 		return userResponse, err
 	}
@@ -87,7 +104,7 @@ func (u *userUsecase) Login(request model.UserLoginRequest) (model.UserLoginResp
 		Email:       user.Email,
 		ProvinceID:  userProvince,
 		CityID:      userCity,
-		Token:       "asdasdasdasdasdasd",
+		Token:       tokenString,
 	}
 
 	return userResponse, nil

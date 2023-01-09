@@ -5,5 +5,6 @@
         "port":"2252",
         "dbname":"mini_project_evermos"
     },
-    "port":"8080"
+    "port":"8080",
+    "secret_key":"R4k4m1N_V1x_Ev3rM0s"
 }

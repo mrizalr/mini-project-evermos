@@ -2,17 +2,9 @@ package utils
 
 import (
 	"encoding/json"
-	"fmt"
-
-	"github.com/mrizalr/mini-project-evermos/model"
 )
 
-var baseUrl string = `https://www.emsifa.com/api-wilayah-indonesia/api`
-
-func GetProvince(ProvinceID uint) (model.Province, error) {
-	url := fmt.Sprintf(`%s/province/%d.json`, baseUrl, ProvinceID)
-	province := model.Province{}
-
+func GetRegionData(url string, result interface{}) error {
 	data, err := Fetch(FetchOptions{
 		Method: "GET",
 		Url:    url,
@@ -20,35 +12,13 @@ func GetProvince(ProvinceID uint) (model.Province, error) {
 	})
 
 	if err != nil {
-		return province, err
+		return err
 	}
 
-	err = json.Unmarshal(data, &province)
+	err = json.Unmarshal(data, result)
 	if err != nil {
-		return province, err
+		return err
 	}
 
-	return province, nil
-}
-
-func GetCity(CityID uint) (model.City, error) {
-	url := fmt.Sprintf(`%s/regency/%d.json`, baseUrl, CityID)
-	city := model.City{}
-
-	data, err := Fetch(FetchOptions{
-		Method: "GET",
-		Url:    url,
-		Body:   nil,
-	})
-
-	if err != nil {
-		return city, err
-	}
-
-	err = json.Unmarshal(data, &city)
-	if err != nil {
-		return city, err
-	}
-
-	return city, nil
+	return nil
 }

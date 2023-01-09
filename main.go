@@ -7,7 +7,8 @@ import (
 	_ "github.com/mrizalr/mini-project-evermos/config"
 	"github.com/mrizalr/mini-project-evermos/database"
 	"github.com/mrizalr/mini-project-evermos/domain"
-	"github.com/mrizalr/mini-project-evermos/user/delivery/http"
+	provinceHandler "github.com/mrizalr/mini-project-evermos/province/delivery/http"
+	userHandler "github.com/mrizalr/mini-project-evermos/user/delivery/http"
 	"github.com/mrizalr/mini-project-evermos/user/repository/mysql"
 	"github.com/mrizalr/mini-project-evermos/user/usecase"
 	"github.com/spf13/viper"
@@ -24,7 +25,9 @@ func main() {
 
 	mysqlUserRepository := mysql.NewMysqlUserRepository(db)
 	userUsecase := usecase.NewUserUsecase(mysqlUserRepository)
-	http.NewUserHandler(v1, userUsecase)
+	userHandler.NewUserHandler(v1, userUsecase)
+
+	provinceHandler.NewProvinceHandler(v1)
 
 	db.AutoMigrate(&domain.User{})
 	app.Listen(fmt.Sprintf(":%s", viper.GetString("port")))
