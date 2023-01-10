@@ -86,8 +86,8 @@ func (u *userUsecase) Login(request model.UserLoginRequest) (model.UserLoginResp
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": user.ID,
-		"exp":     time.Now().Add(24 * time.Hour).Unix(),
+		"user_id": strconv.Itoa(int(user.ID)),
+		"exp":     strconv.FormatInt(time.Now().Add(24*time.Hour).Unix(), 10),
 	})
 
 	tokenString, err := token.SignedString([]byte(viper.GetString("secret_key")))

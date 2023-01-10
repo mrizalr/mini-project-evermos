@@ -1,4 +1,4 @@
-package http
+package httphandler
 
 import (
 	"net/http"
@@ -31,8 +31,7 @@ func (h *userHandler) RegisterUser(c *fiber.Ctx) error {
 	}
 
 	if len(errs) > 0 {
-		c.Status(http.StatusBadRequest)
-		return c.JSON(model.Response{
+		return c.Status(http.StatusBadRequest).JSON(model.Response{
 			Status:  false,
 			Message: "Failed to POST data",
 			Errors:  errs,
@@ -40,8 +39,7 @@ func (h *userHandler) RegisterUser(c *fiber.Ctx) error {
 		})
 	}
 
-	c.Status(http.StatusOK)
-	return c.JSON(model.Response{
+	return c.Status(http.StatusOK).JSON(model.Response{
 		Status:  true,
 		Message: "Succeed to POST data",
 		Errors:  nil,
@@ -63,8 +61,7 @@ func (h *userHandler) LoginUser(c *fiber.Ctx) error {
 	}
 
 	if len(errs) > 0 {
-		c.Status(http.StatusUnauthorized)
-		return c.JSON(model.Response{
+		return c.Status(http.StatusUnauthorized).JSON(model.Response{
 			Status:  false,
 			Message: "Failed to POST data",
 			Errors:  errs,
@@ -72,12 +69,10 @@ func (h *userHandler) LoginUser(c *fiber.Ctx) error {
 		})
 	}
 
-	c.Status(http.StatusOK)
-	return c.JSON(model.Response{
+	return c.Status(fiber.StatusOK).JSON(model.Response{
 		Status:  true,
 		Message: "Succeed to POST data",
 		Errors:  nil,
 		Data:    user,
 	})
-
 }

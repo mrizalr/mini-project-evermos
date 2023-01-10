@@ -1,8 +1,10 @@
 package domain
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/mrizalr/mini-project-evermos/model"
 	"gorm.io/gorm"
 )
@@ -17,6 +19,16 @@ type User struct {
 	Email       string    `json:"email" gorm:"type:varchar(255);not null;unique"`
 	ProvinceID  uint      `json:"id_provinsi"`
 	CityID      uint      `json:"id_kota"`
+}
+
+func (u *User) AfterCreate(tx *gorm.DB) error {
+	store := Store{
+		Name:     fmt.Sprintf("toko-%s", uuid.New().String()),
+		PhotoURL: "",
+		UserID:   u.ID,
+	}
+
+	return tx.Create(&store).Error
 }
 
 type UserRepository interface {
