@@ -8,5 +8,5 @@ type UpdateStoreRequest struct {
 type GetStoresOptions struct {
 	Page  int
 	Limit int
-	Name  string
+	Nama  string
 }

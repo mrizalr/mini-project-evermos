@@ -41,8 +41,8 @@ func (r *mysqlStoreRepository) GetStores(opts model.GetStoresOptions) ([]domain.
 	stores := []domain.Store{}
 	tx := r.db.Limit(opts.Limit).Offset(opts.Limit * (opts.Page - 1))
 
-	if opts.Name != "" {
-		tx = tx.Where("name LIKE ?", "%"+opts.Name+"%")
+	if opts.Nama != "" {
+		tx = tx.Where("name LIKE ?", "%"+opts.Nama+"%")
 	}
 
 	tx.Find(&stores)
