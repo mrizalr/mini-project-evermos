@@ -18,8 +18,19 @@ func (r *mysqlUserRepository) Register(user domain.User) error {
 	return tx.Error
 }
 
-func (r *mysqlUserRepository) Login(phoneNumber string) (domain.User, error) {
+func (r *mysqlUserRepository) GetUserByPhoneNumber(phoneNumber string) (domain.User, error) {
 	user := domain.User{}
 	tx := r.db.Where("phone_number = ?", phoneNumber).First(&user)
 	return user, tx.Error
+}
+
+func (r *mysqlUserRepository) GetUserByID(userID int) (domain.User, error) {
+	user := domain.User{}
+	tx := r.db.Where("id = ?", userID).First(&user)
+	return user, tx.Error
+}
+
+func (r *mysqlUserRepository) UpdateUser(user domain.User) error {
+	tx := r.db.Model(&user).Updates(&user)
+	return tx.Error
 }

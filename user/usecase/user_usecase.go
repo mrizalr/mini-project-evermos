@@ -61,7 +61,7 @@ func (u *userUsecase) Register(request model.UserRegisterRequest) error {
 func (u *userUsecase) Login(request model.UserLoginRequest) (model.UserLoginResponse, error) {
 	var userResponse model.UserLoginResponse
 
-	user, err := u.userRepository.Login(request.PhoneNumber)
+	user, err := u.userRepository.GetUserByPhoneNumber(request.PhoneNumber)
 	if err != nil {
 		return userResponse, err
 	}
@@ -99,7 +99,7 @@ func (u *userUsecase) Login(request model.UserLoginRequest) (model.UserLoginResp
 		Name:        user.Name,
 		PhoneNumber: user.PhoneNumber,
 		BirthDate:   user.Birthdate.Format("02/01/2006"),
-		Bio:         "ASDASD !!",
+		Bio:         user.Bio,
 		Job:         user.Job,
 		Email:       user.Email,
 		ProvinceID:  userProvince,
@@ -108,4 +108,81 @@ func (u *userUsecase) Login(request model.UserLoginRequest) (model.UserLoginResp
 	}
 
 	return userResponse, nil
+}
+
+func (u *userUsecase) GetMyProfile(userID int) (model.GetUserResponse, error) {
+	var userResponse model.GetUserResponse
+
+	user, err := u.userRepository.GetUserByID(userID)
+	if err != nil {
+		return userResponse, err
+	}
+
+	url := fmt.Sprintf("https://www.emsifa.com/api-wilayah-indonesia/api/province/%d.json", user.ProvinceID)
+	userProvince := model.Province{}
+	err = utils.GetRegionData(url, &userProvince)
+	if err != nil {
+		return userResponse, err
+	}
+
+	url = fmt.Sprintf("https://www.emsifa.com/api-wilayah-indonesia/api/regency/%d.json", user.CityID)
+	userCity := model.City{}
+	err = utils.GetRegionData(url, &userCity)
+	if err != nil {
+		return userResponse, err
+	}
+
+	userResponse = model.GetUserResponse{
+		Name:        user.Name,
+		PhoneNumber: user.PhoneNumber,
+		BirthDate:   user.Birthdate.Format("02/01/2006"),
+		Bio:         user.Bio,
+		Job:         user.Job,
+		Email:       user.Email,
+		ProvinceID:  userProvince,
+		CityID:      userCity,
+	}
+
+	return userResponse, nil
+}
+
+func (u *userUsecase) UpdateMyProfile(userID int, updateUserRequest model.UpdateUserRequest) error {
+	userBirthdate, err := time.Parse("02/01/2006", updateUserRequest.Birthdate)
+	if err != nil {
+		return err
+	}
+
+	userProvinceID, err := strconv.Atoi(updateUserRequest.ProvinceID)
+	if err != nil {
+		return err
+	}
+
+	userCityID, err := strconv.Atoi(updateUserRequest.CityID)
+	if err != nil {
+		return err
+	}
+
+	user := domain.User{
+		Model:       gorm.Model{ID: uint(userID)},
+		Name:        updateUserRequest.Name,
+		Password:    updateUserRequest.Password,
+		PhoneNumber: updateUserRequest.PhoneNumber,
+		Birthdate:   userBirthdate,
+		Bio:         updateUserRequest.Bio,
+		Job:         updateUserRequest.Job,
+		Email:       updateUserRequest.Email,
+		ProvinceID:  uint(userProvinceID),
+		CityID:      uint(userCityID),
+	}
+
+	if updateUserRequest.Password != "" {
+		hashed, err := bcrypt.GenerateFromPassword([]byte(updateUserRequest.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+
+		user.Password = string(hashed)
+	}
+
+	return u.userRepository.UpdateUser(user)
 }

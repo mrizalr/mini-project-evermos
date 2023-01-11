@@ -18,9 +18,9 @@ type storeHandler struct {
 func NewStoreHandler(r fiber.Router, storeUsecase domain.StoreUsecase) {
 	handler := storeHandler{storeUsecase}
 	r.Get("/toko", handler.GetStores)
+	r.Get("/toko/my", middleware.Auth, handler.GetMyStore)
 	r.Get("/toko/:id_toko", handler.GetStoreByID)
 	r.Use(middleware.Auth)
-	r.Get("/toko/my", handler.GetMyStore)
 	r.Put("/toko/:id_toko", handler.UpdateMyStore)
 }
 
