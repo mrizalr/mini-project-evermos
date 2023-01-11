@@ -20,6 +20,7 @@ type User struct {
 	Email       string    `json:"email" gorm:"type:varchar(255);not null;unique"`
 	ProvinceID  uint      `json:"id_provinsi"`
 	CityID      uint      `json:"id_kota"`
+	Role        string    `json:"status"`
 }
 
 func (u *User) AfterCreate(tx *gorm.DB) error {

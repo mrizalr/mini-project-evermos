@@ -104,6 +104,17 @@ func Auth(c *fiber.Ctx) error {
 		})
 	}
 
+	userRole, ok := (*mapClaims)["user_role"].(string)
+	if !ok {
+		return c.Status(fiber.StatusUnauthorized).JSON(model.Response{
+			Status:  false,
+			Message: "Invalid token",
+			Errors:  []string{"your token isn't valid"},
+			Data:    nil,
+		})
+	}
+
 	c.Locals("user_id", userID)
+	c.Locals("user_role", userRole)
 	return c.Next()
 }

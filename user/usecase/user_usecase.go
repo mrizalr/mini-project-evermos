@@ -44,10 +44,12 @@ func (u *userUsecase) Register(request model.UserRegisterRequest) error {
 		Password:    request.Password,
 		PhoneNumber: request.PhoneNumber,
 		Birthdate:   userBirthdate,
+		Bio:         "",
 		Job:         request.Job,
 		Email:       request.Email,
 		ProvinceID:  uint(userProvinceID),
 		CityID:      uint(userCityID),
+		Role:        "user",
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -86,8 +88,9 @@ func (u *userUsecase) Login(request model.UserLoginRequest) (model.UserLoginResp
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id": strconv.Itoa(int(user.ID)),
-		"exp":     strconv.FormatInt(time.Now().Add(24*time.Hour).Unix(), 10),
+		"user_id":   strconv.Itoa(int(user.ID)),
+		"user_role": user.Role,
+		"exp":       strconv.FormatInt(time.Now().Add(24*time.Hour).Unix(), 10),
 	})
 
 	tokenString, err := token.SignedString([]byte(viper.GetString("secret_key")))

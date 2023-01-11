@@ -4,6 +4,9 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	categoryHandler "github.com/mrizalr/mini-project-evermos/category/delivery/httphandler"
+	categoryRepository "github.com/mrizalr/mini-project-evermos/category/repository/mysql"
+	categoryUsecase "github.com/mrizalr/mini-project-evermos/category/usecase"
 	_ "github.com/mrizalr/mini-project-evermos/config"
 	"github.com/mrizalr/mini-project-evermos/database"
 	"github.com/mrizalr/mini-project-evermos/domain"
@@ -22,6 +25,7 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("cannot connect to database : %v", err.Error()))
 	}
+	db.AutoMigrate(&domain.User{}, &domain.Store{}, &domain.Category{})
 
 	app := fiber.New()
 	v1 := app.Group("/api/v1")
@@ -36,6 +40,9 @@ func main() {
 	storeUsecase := storeUsecase.NewStoreUsecase(mysqlStoreRepository)
 	storeHandler.NewStoreHandler(v1, storeUsecase)
 
-	db.AutoMigrate(&domain.User{}, &domain.Store{})
+	mysqlCategoryRepository := categoryRepository.NewMysqlCategoryRepository(db)
+	categoryUsecase := categoryUsecase.NewCategoryUsecase(mysqlCategoryRepository)
+	categoryHandler.NewCategoryHandler(v1, categoryUsecase)
+
 	app.Listen(fmt.Sprintf(":%s", viper.GetString("port")))
 }

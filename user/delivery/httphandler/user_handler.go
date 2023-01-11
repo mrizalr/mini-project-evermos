@@ -18,9 +18,8 @@ func NewUserHandler(r fiber.Router, userUsecase domain.UserUsecase) {
 	handler := userHandler{userUsecase}
 	r.Post("/auth/register", handler.RegisterUser)
 	r.Post("/auth/login", handler.LoginUser)
-	r.Use(middleware.Auth)
-	r.Get("/user", handler.GetMyProfile)
-	r.Put("/user", handler.UpdateMyProfile)
+	r.Get("/user", middleware.Auth, handler.GetMyProfile)
+	r.Put("/user", middleware.Auth, handler.UpdateMyProfile)
 }
 
 func (h *userHandler) RegisterUser(c *fiber.Ctx) error {

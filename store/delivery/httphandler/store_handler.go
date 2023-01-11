@@ -20,8 +20,7 @@ func NewStoreHandler(r fiber.Router, storeUsecase domain.StoreUsecase) {
 	r.Get("/toko", handler.GetStores)
 	r.Get("/toko/my", middleware.Auth, handler.GetMyStore)
 	r.Get("/toko/:id_toko", handler.GetStoreByID)
-	r.Use(middleware.Auth)
-	r.Put("/toko/:id_toko", handler.UpdateMyStore)
+	r.Put("/toko/:id_toko", middleware.Auth, handler.UpdateMyStore)
 }
 
 func (h *storeHandler) GetMyStore(c *fiber.Ctx) error {
