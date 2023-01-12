@@ -13,18 +13,24 @@ type Product struct {
 	ConsumentPrice float32 `json:"harga_konsumen"`
 	Stock          int     `json:"stok"`
 	Description    string  `json:"deskripsi"`
-	Store          struct {
-		ID       uint   `json:"id"`
-		Name     string `json:"nama_toko"`
-		PhotoURL string `json:"url_foto"`
-	} `json:"toko"`
-	Category model.GetCategoryResponse `json:"category"`
-	Photos   []struct {
-		ID        uint   `json:"id"`
-		ProductID uint   `json:"product_id"`
-		Url       string `json:"url"`
-	} `json:"photos"`
+	StoreID        uint    `json:"id_toko"`
+	CategoryID     uint    `json:"id_category"`
 }
 
-type ProductRepository interface{}
-type ProductUsecase interface{}
+type ProductPhotos struct {
+	ID        uint   `json:"id"`
+	ProductID uint   `json:"product_id"`
+	Url       string `json:"url"`
+}
+
+type ProductRepository interface {
+	CreateProduct(Product, []ProductPhotos) (int, error)
+	GetProductByID(int) (Product, []ProductPhotos, error)
+	GetProducts() ([]Product, []ProductPhotos, error)
+}
+
+type ProductUsecase interface {
+	CreateNewProduct(int, model.CreateProductRequest) (int, error)
+	GetProductByID(int) (model.GetProductResponse, error)
+	GetProducts() ([]model.GetProductResponse, error)
+}

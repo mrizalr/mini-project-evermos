@@ -10,3 +10,9 @@ type GetStoresOptions struct {
 	Limit int
 	Nama  string
 }
+
+type GetStoreResponse struct {
+	ID       int    `json:"id"`
+	Name     string `json:"nama_toko"`
+	PhotoURL string `json:"url_foto"`
+}

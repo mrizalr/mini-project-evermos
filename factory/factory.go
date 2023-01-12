@@ -37,6 +37,6 @@ func Init(r fiber.Router, db *gorm.DB) {
 	categoryHandler.NewCategoryHandler(v1, categoryUsecase)
 
 	mysqlProductRepository := productRepository.NewMysqlProductRepository(db)
-	productUsecase := productUsecase.NewProductUsecase(mysqlProductRepository)
-	productHandler.NewProductHandler(v1, productUsecase)
+	productUsecase := productUsecase.NewProductUsecase(mysqlProductRepository, mysqlStoreRepository, mysqlCategoryRepository)
+	productHandler.NewProductHandler(v1, productUsecase, storeUsecase)
 }
