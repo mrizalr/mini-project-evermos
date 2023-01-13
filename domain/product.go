@@ -7,30 +7,37 @@ import (
 
 type Product struct {
 	gorm.Model
-	Name           string  `json:"nama_produk"`
-	Slug           string  `json:"slug"`
-	ResellerPrice  float32 `json:"harga_reseler"`
-	ConsumentPrice float32 `json:"harga_konsumen"`
-	Stock          int     `json:"stok"`
-	Description    string  `json:"deskripsi"`
-	StoreID        uint    `json:"id_toko"`
-	CategoryID     uint    `json:"id_category"`
+	Name           string          `json:"nama_produk"`
+	Slug           string          `json:"slug"`
+	ResellerPrice  float32         `json:"harga_reseler"`
+	ConsumentPrice float32         `json:"harga_konsumen"`
+	Stock          int             `json:"stok"`
+	Description    string          `json:"deskripsi"`
+	StoreID        uint            `json:"id_toko"`
+	CategoryID     uint            `json:"id_category"`
+	Store          Store           `json:"toko"`
+	Category       Category        `json:"category"`
+	Photos         []ProductPhotos `json:"photos"`
 }
 
 type ProductPhotos struct {
-	ID        uint   `json:"id"`
+	gorm.Model
 	ProductID uint   `json:"product_id"`
 	Url       string `json:"url"`
 }
 
 type ProductRepository interface {
-	CreateProduct(Product, []ProductPhotos) (int, error)
-	GetProductByID(int) (Product, []ProductPhotos, error)
-	GetProducts() ([]Product, []ProductPhotos, error)
+	CreateProduct(Product) (int, error)
+	GetProductByID(int) (Product, error)
+	GetProducts(model.GetProductOptions) ([]Product, error)
+	DeleteProductByID(int) error
+	UpdateProduct(Product) error
 }
 
 type ProductUsecase interface {
-	CreateNewProduct(int, model.CreateProductRequest) (int, error)
+	CreateNewProduct(model.CreateProductRequest) (int, error)
 	GetProductByID(int) (model.GetProductResponse, error)
-	GetProducts() ([]model.GetProductResponse, error)
+	GetProducts(model.GetProductOptions) ([]model.GetProductResponse, error)
+	DeleteProductByID(int, int) error
+	UpdateProduct(int, int, model.CreateProductRequest) error
 }

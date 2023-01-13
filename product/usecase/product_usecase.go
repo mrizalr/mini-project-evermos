@@ -1,10 +1,13 @@
 package usecase
 
 import (
+	"fmt"
+	"os"
 	"strings"
 
 	"github.com/mrizalr/mini-project-evermos/domain"
 	"github.com/mrizalr/mini-project-evermos/model"
+	"gorm.io/gorm"
 )
 
 type productUsecase struct {
@@ -21,7 +24,7 @@ func NewProductUsecase(productRepository domain.ProductRepository, storeReposito
 	}
 }
 
-func (u *productUsecase) CreateNewProduct(storeID int, createProductRequest model.CreateProductRequest) (int, error) {
+func (u *productUsecase) CreateNewProduct(createProductRequest model.CreateProductRequest) (int, error) {
 	productSlug := strings.ToLower(strings.ReplaceAll(createProductRequest.Name, " ", "-"))
 
 	product := domain.Product{
@@ -31,34 +34,23 @@ func (u *productUsecase) CreateNewProduct(storeID int, createProductRequest mode
 		ConsumentPrice: createProductRequest.ConsumentPrice,
 		Stock:          createProductRequest.Stock,
 		Description:    createProductRequest.Description,
-		StoreID:        uint(storeID),
+		StoreID:        createProductRequest.StoreID,
 		CategoryID:     createProductRequest.CategoryID,
 	}
 
-	productPhotos := []domain.ProductPhotos{}
 	for _, productPhoto := range createProductRequest.Photos {
-		productPhotos = append(productPhotos, domain.ProductPhotos{
+		product.Photos = append(product.Photos, domain.ProductPhotos{
 			Url: productPhoto,
 		})
 	}
 
-	return u.productRepository.CreateProduct(product, productPhotos)
+	return u.productRepository.CreateProduct(product)
 }
 
 func (u *productUsecase) GetProductByID(productID int) (model.GetProductResponse, error) {
 	var result model.GetProductResponse
 
-	product, productPhotos, err := u.productRepository.GetProductByID(productID)
-	if err != nil {
-		return result, err
-	}
-
-	store, err := u.storeRepository.GetStoreByID(int(product.StoreID))
-	if err != nil {
-		return result, err
-	}
-
-	category, err := u.categoryRepository.GetCategoryByID(int(product.CategoryID))
+	product, err := u.productRepository.GetProductByID(productID)
 	if err != nil {
 		return result, err
 	}
@@ -72,65 +64,38 @@ func (u *productUsecase) GetProductByID(productID int) (model.GetProductResponse
 		Stock:          product.Stock,
 		Description:    product.Description,
 		Store: model.GetStoreResponse{
-			ID:       int(store.ID),
-			Name:     store.Name,
-			PhotoURL: store.PhotoURL,
+			ID:       int(product.Store.ID),
+			Name:     product.Store.Name,
+			PhotoURL: product.Store.PhotoURL,
 		},
 		Category: model.GetCategoryResponse{
-			ID:   category.ID,
-			Name: category.Name,
+			ID:   product.Category.ID,
+			Name: product.Category.Name,
 		},
 	}
 
-	for _, photo := range productPhotos {
-		result.Photos = append(result.Photos, photo)
+	for _, photo := range product.Photos {
+		p := model.ProductPhotosResponse{
+			ID:        photo.ID,
+			ProductID: photo.ProductID,
+			Url:       photo.Url,
+		}
+
+		result.Photos = append(result.Photos, p)
 	}
 
 	return result, nil
 }
 
-func (u *productUsecase) GetProducts() ([]model.GetProductResponse, error) {
+func (u *productUsecase) GetProducts(opts model.GetProductOptions) ([]model.GetProductResponse, error) {
 	var result []model.GetProductResponse
-	productPhotos := make(map[uint][]domain.ProductPhotos)
 
-	products, photos, err := u.productRepository.GetProducts()
+	products, err := u.productRepository.GetProducts(opts)
 	if err != nil {
 		return result, err
 	}
 
-	for _, photo := range photos {
-		productPhotos[photo.ProductID] = append(productPhotos[photo.ProductID], photo)
-	}
-
 	for _, product := range products {
-		store, err := u.storeRepository.GetStoreByID(int(product.StoreID))
-		if err != nil {
-			return result, err
-		}
-
-		category, err := u.categoryRepository.GetCategoryByID(int(product.CategoryID))
-		if err != nil {
-			return result, err
-		}
-
-		photoResponse := []struct {
-			ID        uint   `json:"id"`
-			ProductID uint   `json:"product_id"`
-			Url       string `json:"url"`
-		}{}
-
-		for _, productPhoto := range productPhotos[product.ID] {
-			photoResponse = append(photoResponse, struct {
-				ID        uint   `json:"id"`
-				ProductID uint   `json:"product_id"`
-				Url       string `json:"url"`
-			}{
-				ID:        productPhoto.ID,
-				ProductID: productPhoto.ProductID,
-				Url:       productPhoto.Url,
-			})
-		}
-
 		productResponse := model.GetProductResponse{
 			ID:             int(product.ID),
 			Name:           product.Name,
@@ -140,19 +105,90 @@ func (u *productUsecase) GetProducts() ([]model.GetProductResponse, error) {
 			Stock:          product.Stock,
 			Description:    product.Description,
 			Store: model.GetStoreResponse{
-				ID:       int(store.ID),
-				Name:     store.Name,
-				PhotoURL: store.PhotoURL,
+				ID:       int(product.Store.ID),
+				Name:     product.Store.Name,
+				PhotoURL: product.Store.PhotoURL,
 			},
 			Category: model.GetCategoryResponse{
-				ID:   category.ID,
-				Name: category.Name,
+				ID:   product.Category.ID,
+				Name: product.Category.Name,
 			},
-			Photos: photoResponse,
+		}
+
+		for _, photo := range product.Photos {
+			p := model.ProductPhotosResponse{
+				ID:        photo.ID,
+				ProductID: photo.ProductID,
+				Url:       photo.Url,
+			}
+
+			productResponse.Photos = append(productResponse.Photos, p)
 		}
 
 		result = append(result, productResponse)
 	}
 
 	return result, nil
+}
+
+func (u *productUsecase) DeleteProductByID(userID int, productID int) error {
+	store, err := u.storeRepository.GetMyStore(userID)
+	if err != nil {
+		return err
+	}
+
+	product, err := u.productRepository.GetProductByID(productID)
+	if err != nil {
+		return err
+	}
+
+	if product.StoreID != store.ID {
+		return fmt.Errorf("permission denied. You can only delete products from your own store")
+	}
+
+	for _, photo := range product.Photos {
+		os.Remove(fmt.Sprintf("images/product_photo/%d_%s", productID, photo.Url))
+	}
+
+	return u.productRepository.DeleteProductByID(productID)
+}
+
+func (u *productUsecase) UpdateProduct(userID int, productID int, updateProductRequest model.CreateProductRequest) error {
+	store, err := u.storeRepository.GetMyStore(userID)
+	if err != nil {
+		return err
+	}
+
+	product, err := u.productRepository.GetProductByID(productID)
+	if err != nil {
+		return err
+	}
+
+	if product.StoreID != store.ID {
+		return fmt.Errorf("permission denied. You can only delete products from your own store")
+	}
+
+	productSlug := strings.ToLower(strings.ReplaceAll(updateProductRequest.Name, " ", "-"))
+
+	updateProduct := domain.Product{
+		Model: gorm.Model{
+			ID: uint(productID),
+		},
+		Name:           updateProductRequest.Name,
+		Slug:           productSlug,
+		ResellerPrice:  updateProductRequest.ResellerPrice,
+		ConsumentPrice: updateProductRequest.ConsumentPrice,
+		Stock:          updateProductRequest.Stock,
+		Description:    updateProductRequest.Description,
+		StoreID:        updateProductRequest.StoreID,
+		CategoryID:     updateProductRequest.CategoryID,
+	}
+
+	for _, productPhoto := range updateProductRequest.Photos {
+		updateProduct.Photos = append(updateProduct.Photos, domain.ProductPhotos{
+			Url: productPhoto,
+		})
+	}
+
+	return u.productRepository.UpdateProduct(updateProduct)
 }
