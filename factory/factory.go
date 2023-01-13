@@ -4,6 +4,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 
+	addressHandler "github.com/mrizalr/mini-project-evermos/address/delivery/httphandler"
+	addressRepository "github.com/mrizalr/mini-project-evermos/address/repository/mysql"
+	addressUsecase "github.com/mrizalr/mini-project-evermos/address/usecase"
 	categoryHandler "github.com/mrizalr/mini-project-evermos/category/delivery/httphandler"
 	categoryRepository "github.com/mrizalr/mini-project-evermos/category/repository/mysql"
 	categoryUsecase "github.com/mrizalr/mini-project-evermos/category/usecase"
@@ -39,4 +42,8 @@ func Init(r fiber.Router, db *gorm.DB) {
 	mysqlProductRepository := productRepository.NewMysqlProductRepository(db)
 	productUsecase := productUsecase.NewProductUsecase(mysqlProductRepository, mysqlStoreRepository, mysqlCategoryRepository)
 	productHandler.NewProductHandler(v1, productUsecase, storeUsecase)
+
+	mysqlAddressRepository := addressRepository.NewMysqlAddressRepository(db)
+	addressUsecase := addressUsecase.NewAddressUsecase(mysqlAddressRepository)
+	addressHandler.NewAddressHandler(v1, addressUsecase)
 }

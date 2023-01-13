@@ -165,7 +165,7 @@ func (u *productUsecase) UpdateProduct(userID int, productID int, updateProductR
 	}
 
 	if product.StoreID != store.ID {
-		return fmt.Errorf("permission denied. You can only delete products from your own store")
+		return fmt.Errorf("permission denied. You can only update products from your own store")
 	}
 
 	productSlug := strings.ToLower(strings.ReplaceAll(updateProductRequest.Name, " ", "-"))

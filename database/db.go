@@ -16,6 +16,13 @@ func New() *gorm.DB {
 		panic(fmt.Errorf("cannot connect to database : %v", err.Error()))
 	}
 
-	db.AutoMigrate(&domain.User{}, &domain.Store{}, &domain.Category{}, &domain.Product{}, &domain.ProductPhotos{})
+	db.AutoMigrate(
+		&domain.User{},
+		&domain.Store{},
+		&domain.Category{},
+		&domain.Product{},
+		&domain.ProductPhotos{},
+		&domain.Address{},
+	)
 	return db
 }
