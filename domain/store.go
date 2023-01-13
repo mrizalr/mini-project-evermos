@@ -22,7 +22,7 @@ type StoreRepository interface {
 
 type StoreUsecase interface {
 	GetMyStore(int) (Store, error)
-	UpdateStore(int, model.UpdateStoreRequest) error
+	UpdateStore(int, int, model.UpdateStoreRequest) error
 	GetStoreByID(int) (Store, error)
 	GetStores(model.GetStoresOptions) ([]Store, error)
 }

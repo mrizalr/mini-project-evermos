@@ -58,6 +58,11 @@ func (h *storeHandler) UpdateMyStore(c *fiber.Ctx) error {
 	request := model.UpdateStoreRequest{}
 	storagePath := "images/store_photo/"
 
+	userID, err := strconv.Atoi(c.Locals("user_id").(string))
+	if err != nil {
+		errs = append(errs, err.Error())
+	}
+
 	storeIDparam := c.Params("id_toko")
 	storeID, err := strconv.Atoi(storeIDparam)
 	if err != nil {
@@ -86,7 +91,7 @@ func (h *storeHandler) UpdateMyStore(c *fiber.Ctx) error {
 		}
 	}
 
-	err = h.storeUsecase.UpdateStore(storeID, request)
+	err = h.storeUsecase.UpdateStore(userID, storeID, request)
 	if err != nil {
 		errs = append(errs, err.Error())
 	}

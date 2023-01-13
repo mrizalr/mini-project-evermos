@@ -20,7 +20,16 @@ func (u *storeUsecase) GetMyStore(userID int) (domain.Store, error) {
 	return u.storeRepository.GetMyStore(userID)
 }
 
-func (u *storeUsecase) UpdateStore(storeID int, updateStoreRequest model.UpdateStoreRequest) error {
+func (u *storeUsecase) UpdateStore(userID int, storeID int, updateStoreRequest model.UpdateStoreRequest) error {
+	store, err := u.GetStoreByID(storeID)
+	if err != nil {
+		return err
+	}
+
+	if store.UserID != uint(userID) {
+		return fmt.Errorf("permission denied. You are only allowed to access your own store")
+	}
+
 	foundStore, err := u.storeRepository.GetStoreByName(updateStoreRequest.Name)
 	if err != nil {
 		return err
@@ -31,7 +40,7 @@ func (u *storeUsecase) UpdateStore(storeID int, updateStoreRequest model.UpdateS
 		return fmt.Errorf("store name already used")
 	}
 
-	store := domain.Store{
+	storeUpdate := domain.Store{
 		Model: gorm.Model{
 			ID: uint(storeID),
 		},
@@ -39,7 +48,7 @@ func (u *storeUsecase) UpdateStore(storeID int, updateStoreRequest model.UpdateS
 		PhotoURL: updateStoreRequest.PhotoURL,
 	}
 
-	return u.storeRepository.UpdateStore(store)
+	return u.storeRepository.UpdateStore(storeUpdate)
 
 }
 
