@@ -23,6 +23,8 @@ func New() *gorm.DB {
 		&domain.Product{},
 		&domain.ProductPhotos{},
 		&domain.Address{},
+		&domain.Transaction{},
+		&domain.TransactionDetail{},
 	)
 	return db
 }

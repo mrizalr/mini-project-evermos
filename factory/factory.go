@@ -17,6 +17,9 @@ import (
 	storeHandler "github.com/mrizalr/mini-project-evermos/store/delivery/httphandler"
 	storeRepository "github.com/mrizalr/mini-project-evermos/store/repository/mysql"
 	storeUsecase "github.com/mrizalr/mini-project-evermos/store/usecase"
+	transactionHandler "github.com/mrizalr/mini-project-evermos/transaction/delivery/httphandler"
+	transactionRepository "github.com/mrizalr/mini-project-evermos/transaction/repository/mysql"
+	transactionUsecase "github.com/mrizalr/mini-project-evermos/transaction/usecase"
 	userHandler "github.com/mrizalr/mini-project-evermos/user/delivery/httphandler"
 	userRepository "github.com/mrizalr/mini-project-evermos/user/repository/mysql"
 	userUsecase "github.com/mrizalr/mini-project-evermos/user/usecase"
@@ -46,4 +49,8 @@ func Init(r fiber.Router, db *gorm.DB) {
 	mysqlAddressRepository := addressRepository.NewMysqlAddressRepository(db)
 	addressUsecase := addressUsecase.NewAddressUsecase(mysqlAddressRepository)
 	addressHandler.NewAddressHandler(v1, addressUsecase)
+
+	transactionRepository := transactionRepository.NewTransactionRepository(db)
+	transactionUsecase := transactionUsecase.NewTransactionUsecase(transactionRepository, mysqlProductRepository)
+	transactionHandler.NewTransactionHandler(v1, transactionUsecase)
 }

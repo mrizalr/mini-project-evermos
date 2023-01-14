@@ -1,10 +1,10 @@
 {
-    "db":{
-        "user":"root",
-        "password":"",
-        "port":"2252",
-        "dbname":"mini_project_evermos"
+    "db": {
+        "user": "root",
+        "password": "",
+        "port": "3306",
+        "dbname": "mini_project_evermos"
     },
-    "port":"8000",
-    "secret_key":"R4k4m1N_V1x_Ev3rM0s"
+    "port": "8000",
+    "secret_key": "R4k4m1N_V1x_Ev3rM0s"
 }
