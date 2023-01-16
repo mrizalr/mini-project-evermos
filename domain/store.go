@@ -7,7 +7,7 @@ import (
 
 type Store struct {
 	gorm.Model
-	Name     string `json:"nama_toko"`
+	Name     string `json:"nama_toko" gorm:"type:varchar(150)"`
 	PhotoURL string `json:"url_foto"`
 	UserID   uint   `json:"user_id"`
 }

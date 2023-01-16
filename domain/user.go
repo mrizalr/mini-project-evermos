@@ -15,12 +15,12 @@ type User struct {
 	Password    string    `json:"kata_sandi" gorm:"not null"`
 	PhoneNumber string    `json:"no_telp" gorm:"type:varchar(255);not null;unique"`
 	Birthdate   time.Time `json:"tanggal_lahir"`
-	Bio         string    `json:"tentang"`
-	Job         string    `json:"pekerjaan"`
+	Bio         string    `json:"tentang" gorm:"type:varchar(255)"`
+	Job         string    `json:"pekerjaan" gorm:"type:varchar(50)"`
 	Email       string    `json:"email" gorm:"type:varchar(255);not null;unique"`
 	ProvinceID  uint      `json:"id_provinsi"`
 	CityID      uint      `json:"id_kota"`
-	Role        string    `json:"status"`
+	Role        string    `json:"status" gorm:"type:varchar(20)"`
 }
 
 func (u *User) AfterCreate(tx *gorm.DB) error {

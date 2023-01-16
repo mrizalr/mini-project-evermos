@@ -7,7 +7,7 @@ import (
 
 type Category struct {
 	gorm.Model
-	Name string `json:"nama_category"`
+	Name string `json:"nama_category" gorm:"type:varchar(50)"`
 }
 
 type CategoryRepository interface {

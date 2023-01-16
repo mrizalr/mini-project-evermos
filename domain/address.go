@@ -7,10 +7,10 @@ import (
 
 type Address struct {
 	gorm.Model
-	Title        string `json:"judul_alamat"`
-	ReceiverName string `json:"nama_penerima"`
-	PhoneNumber  string `json:"no_telp"`
-	Detail       string `json:"detail_alamat"`
+	Title        string `json:"judul_alamat" gorm:"type:varchar(50)"`
+	ReceiverName string `json:"nama_penerima" gorm:"type:varchar(50)"`
+	PhoneNumber  string `json:"no_telp" gorm:"type:varchar(20)"`
+	Detail       string `json:"detail_alamat" gorm:"type:varchar(255)"`
 	UserID       uint
 }
 

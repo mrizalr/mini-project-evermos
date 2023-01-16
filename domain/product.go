@@ -7,11 +7,11 @@ import (
 
 type Product struct {
 	gorm.Model
-	Name           string          `json:"nama_produk"`
-	Slug           string          `json:"slug"`
+	Name           string          `json:"nama_produk" gorm:"type:varchar(150)"`
+	Slug           string          `json:"slug" gorm:"type:varchar(150)"`
 	ResellerPrice  float32         `json:"harga_reseler"`
 	ConsumentPrice float32         `json:"harga_konsumen"`
-	Stock          int             `json:"stok"`
+	Stock          int             `json:"stok" gorm:"int"`
 	Description    string          `json:"deskripsi"`
 	StoreID        uint            `json:"id_toko"`
 	CategoryID     uint            `json:"id_category"`

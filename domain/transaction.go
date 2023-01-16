@@ -8,8 +8,8 @@ import (
 type Transaction struct {
 	gorm.Model
 	TotalPrice        float64             `json:"total_harga"`
-	Invoice           string              `json:"kode_invoice"`
-	PaymentMethod     string              `json:"metode_bayar"`
+	Invoice           string              `json:"kode_invoice" gorm:"type:varchar(30)"`
+	PaymentMethod     string              `json:"metode_bayar" gorm:"type:varchar(20)"`
 	AddressID         uint                `json:"id_alamat_kirim"`
 	Address           Address             `json:"alamat_kirim"`
 	UserID            uint                `json:"user_id"`
@@ -21,7 +21,7 @@ type TransactionDetail struct {
 	TransactionID uint    `json:"transaction_id"`
 	ProductID     uint    `json:"product_id"`
 	Product       Product `json:"product"`
-	Quantity      uint    `json:"kuantitas"`
+	Quantity      uint    `json:"kuantitas" gorm:"int unsigned"`
 	TotalPrice    float64 `json:"harga_total"`
 }
 
