@@ -7,11 +7,12 @@ import (
 
 type Transaction struct {
 	gorm.Model
-	TotalPrice        float64 `json:"total_harga"`
-	Invoice           string  `json:"kode_invoice"`
-	PaymentMethod     string  `json:"metode_bayar"`
-	AddressID         uint    `json:"id_alamat_kirim"`
-	Address           Address
+	TotalPrice        float64             `json:"total_harga"`
+	Invoice           string              `json:"kode_invoice"`
+	PaymentMethod     string              `json:"metode_bayar"`
+	AddressID         uint                `json:"id_alamat_kirim"`
+	Address           Address             `json:"alamat_kirim"`
+	UserID            uint                `json:"user_id"`
 	TransactionDetail []TransactionDetail `json:"detail_trx"`
 }
 
@@ -26,8 +27,12 @@ type TransactionDetail struct {
 
 type TransactionRepository interface {
 	CreateNewTransaction(Transaction) (int, error)
+	GetTransactionByID(int) (Transaction, error)
+	GetTransactions(int) ([]Transaction, error)
 }
 
 type TransactionUsecase interface {
 	CreateNewTransaction(int, model.CreateTransactionRequest) (int, error)
+	GetTransactionByID(int, int) (model.GetTransactionResponse, error)
+	GetTransactions(int) ([]model.GetTransactionResponse, error)
 }

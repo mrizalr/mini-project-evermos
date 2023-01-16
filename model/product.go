@@ -17,6 +17,18 @@ type ProductPhotosResponse struct {
 	Url       string `json:"url"`
 }
 
+type GetProductTrxResponse struct {
+	ID             int                     `json:"id"`
+	Name           string                  `json:"nama_produk"`
+	Slug           string                  `json:"slug"`
+	ResellerPrice  float32                 `json:"harga_reseler"`
+	ConsumentPrice float32                 `json:"harga_konsumen"`
+	Description    string                  `json:"deskripsi"`
+	Store          GetStoreTrxResponse     `json:"toko"`
+	Category       GetCategoryResponse     `json:"category"`
+	Photos         []ProductPhotosResponse `json:"photos"`
+}
+
 type GetProductResponse struct {
 	ID             int                     `json:"id"`
 	Name           string                  `json:"nama_produk"`

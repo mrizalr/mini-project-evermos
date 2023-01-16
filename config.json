@@ -2,7 +2,7 @@
     "db": {
         "user": "root",
         "password": "",
-        "port": "3306",
+        "port": "2252",
         "dbname": "mini_project_evermos"
     },
     "port": "8000",

@@ -16,3 +16,8 @@ type GetStoreResponse struct {
 	Name     string `json:"nama_toko"`
 	PhotoURL string `json:"url_foto"`
 }
+
+type GetStoreTrxResponse struct {
+	Name     string `json:"nama_toko"`
+	PhotoURL string `json:"url_foto"`
+}
